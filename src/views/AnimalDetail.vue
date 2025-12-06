@@ -4,8 +4,14 @@
 
     <div v-if="animal" class="animal-detail-content">
       <div class="animal-image-section">
-        <div class="image-wrapper">
-          <img :src="animal.images[0]" :alt="animal.name" />
+        <div class="images-gallery">
+          <div
+            v-for="(image, index) in animal.images"
+            :key="index"
+            class="image-wrapper"
+          >
+            <img :src="image" :alt="`${animal.name} - Image ${index + 1}`" />
+          </div>
         </div>
       </div>
 
@@ -16,8 +22,7 @@
         <div class="info-card">
           <h2>About</h2>
           <p class="animal-description">
-            The {{ animal.name }} is a fascinating member of the {{ animal.category.toLowerCase() }} family.
-            Learn more about this amazing creature!
+            {{ animal.description }}
           </p>
         </div>
 
@@ -97,8 +102,15 @@ onMounted(() => {
 
 .animal-image-section {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+}
+
+.images-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  width: 100%;
 }
 
 .image-wrapper {
@@ -108,12 +120,20 @@ onMounted(() => {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   background: #ffffff;
   border: 2px solid #e5e5e5;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.image-wrapper:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
 .image-wrapper img {
   width: 100%;
   height: auto;
   display: block;
+  object-fit: cover;
+  aspect-ratio: 4 / 3;
 }
 
 .animal-info-section {
@@ -195,6 +215,10 @@ onMounted(() => {
 
   .animal-info-section h1 {
     font-size: 2.5rem;
+  }
+
+  .images-gallery {
+    grid-template-columns: 1fr;
   }
 
   .image-wrapper {

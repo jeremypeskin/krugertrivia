@@ -75,7 +75,7 @@
 
       <div class="buttons-container">
         <router-link to="/animals" class="encyclopedia-link">
-          Review Animal Encyclopedia
+          Animal Encyclopedia
         </router-link>
 
         <button

@@ -60,7 +60,7 @@
           <!-- Animal Image -->
           <div class="image-container">
             <img
-              :src="currentAnimal.images[0]"
+              :src="currentAnimalImage"
               :alt="currentAnimal.name"
               class="animal-image"
             />
@@ -87,11 +87,13 @@
         <div v-if="isCorrect" class="feedback-message correct">
           <h2>Correct!</h2>
           <p>Great job, {{ currentPlayer.name }}! That's a {{ currentAnimal.name }}!</p>
+          <p v-if="currentAnimal.description" class="animal-description">{{ currentAnimal.description }}</p>
           <p class="points-earned">+1 point!</p>
         </div>
         <div v-else class="feedback-message incorrect">
           <h2>Incorrect</h2>
           <p>The correct answer is: <strong>{{ currentAnimal.name }}</strong></p>
+          <p v-if="currentAnimal.description" class="animal-description">{{ currentAnimal.description }}</p>
         </div>
         <button @click="nextAnimal" class="next-button">
           Next Animal →
@@ -144,6 +146,16 @@ const currentPlayer = computed(() => {
 // Sorted players by score (descending)
 const sortedPlayers = computed(() => {
   return [...players.value].sort((a, b) => b.score - a.score)
+})
+
+// Get random image from current animal's images
+const currentAnimalImage = computed(() => {
+  if (!currentAnimal.value || !currentAnimal.value.images || currentAnimal.value.images.length === 0) {
+    return ''
+  }
+  const images = currentAnimal.value.images
+  const randomIndex = Math.floor(Math.random() * images.length)
+  return images[randomIndex]
 })
 
 // Create shuffled options (correct answer + wrong suggestions from filtered animals)
@@ -550,6 +562,19 @@ h1 {
   font-size: 1.125rem;
   font-weight: 500;
   line-height: 1.6;
+}
+
+.feedback-message .animal-description {
+  margin-top: 1.25rem;
+  margin-bottom: 0;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .feedback-message strong {
