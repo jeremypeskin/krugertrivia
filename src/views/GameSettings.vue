@@ -1,6 +1,6 @@
 <template>
   <div class="settings-container">
-    <h1>🐾 Animal Trivia Game Setup 🐾</h1>
+    <h1>Animal Trivia Game Setup</h1>
 
     <div class="settings-content">
       <div class="players-section">
@@ -48,7 +48,7 @@
         class="start-button"
         :disabled="players.length === 0"
       >
-        Start Game 🎮
+        Start Game
       </button>
     </div>
   </div>
@@ -89,49 +89,22 @@ function startGame() {
 <style scoped>
 .settings-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
+  background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 25%, #f0f9ff 50%, #ecfdf5 75%, #d1fae5 100%);
   padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.settings-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background:
-    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
-  pointer-events: none;
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 h1 {
-  color: white;
-  font-size: 3rem;
+  color: #1a1a1a;
+  font-size: 2.5rem;
   margin: 0 0 2rem 0;
-  text-shadow:
-    3px 3px 0px rgba(0, 0, 0, 0.2),
-    0 0 20px rgba(255, 255, 255, 0.3);
-  font-weight: 900;
-  letter-spacing: 2px;
-  position: relative;
-  z-index: 1;
+  font-weight: 700;
   text-align: center;
+  letter-spacing: -0.5px;
 }
 
 .settings-content {
@@ -142,24 +115,19 @@ h1 {
 }
 
 .players-section {
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(10px);
-  border-radius: 25px;
+  background: #ffffff;
+  border-radius: 16px;
   padding: 2rem;
-  border: 4px solid rgba(255, 255, 255, 0.5);
-  box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.2),
-    inset 0 2px 10px rgba(255, 255, 255, 0.3);
+  border: 2px solid #e5e5e5;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   margin-bottom: 2rem;
 }
 
 .players-section h2 {
-  color: white;
-  font-size: 2rem;
+  color: #1a1a1a;
+  font-size: 1.5rem;
   margin: 0 0 1.5rem 0;
-  font-weight: 800;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  font-family: 'Georgia', 'Times New Roman', 'Times', serif;
+  font-weight: 700;
 }
 
 .player-input-section {
@@ -170,56 +138,49 @@ h1 {
 
 .player-input {
   flex: 1;
-  padding: 1rem 1.5rem;
-  font-size: 1.1rem;
-  border: 4px solid rgba(255, 255, 255, 0.5);
-  border-radius: 50px;
-  background: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(10px);
-  color: white;
-  font-weight: 600;
+  padding: 0.875rem 1.25rem;
+  font-size: 1rem;
+  border: 2px solid #e5e5e5;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #1a1a1a;
+  font-weight: 500;
   outline: none;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .player-input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
+  color: #999;
 }
 
 .player-input:focus {
-  border-color: rgba(255, 255, 255, 0.8);
-  background: rgba(255, 255, 255, 0.4);
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  border-color: #58CC02;
+  box-shadow: 0 0 0 3px rgba(88, 204, 2, 0.1);
 }
 
 .add-button {
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: white;
-  background: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(10px);
-  border: 4px solid rgba(255, 255, 255, 0.5);
-  border-radius: 50px;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: #1CB0F6;
+  border: none;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow:
-    0 4px 15px rgba(0, 0, 0, 0.2),
-    inset 0 2px 10px rgba(255, 255, 255, 0.3);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(28, 176, 246, 0.2);
 }
 
 .add-button:hover:not(:disabled) {
-  transform: scale(1.05);
-  border-color: rgba(255, 255, 255, 0.8);
-  box-shadow:
-    0 6px 20px rgba(0, 0, 0, 0.3),
-    inset 0 2px 10px rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(28, 176, 246, 0.3);
+  background: #0ea5e9;
 }
 
 .add-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 .players-list {
@@ -232,31 +193,29 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1.5rem;
-  background: rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(5px);
-  border-radius: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.4);
+  padding: 1rem 1.25rem;
+  background: #f7f7f7;
+  border-radius: 12px;
+  border: 2px solid #e5e5e5;
 }
 
 .player-name {
-  color: white;
-  font-size: 1.2rem;
-  font-weight: 700;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  color: #1a1a1a;
+  font-size: 1.125rem;
+  font-weight: 600;
 }
 
 .remove-button {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.6);
-  background: rgba(239, 68, 68, 0.4);
+  border: none;
+  background: #ef4444;
   color: white;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -264,74 +223,64 @@ h1 {
 }
 
 .remove-button:hover {
-  background: rgba(239, 68, 68, 0.6);
+  background: #dc2626;
   transform: scale(1.1);
-  border-color: rgba(255, 255, 255, 0.8);
 }
 
 .empty-state {
   text-align: center;
   padding: 2rem;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1.1rem;
-  font-style: italic;
+  color: #666;
+  font-size: 1rem;
 }
 
 .game-info {
-  background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(10px);
-  border-radius: 25px;
+  background: #ffffff;
+  border-radius: 16px;
   padding: 1.5rem;
-  border: 4px solid rgba(255, 255, 255, 0.5);
-  box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.2),
-    inset 0 2px 10px rgba(255, 255, 255, 0.3);
+  border: 2px solid #e5e5e5;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   margin-bottom: 2rem;
 }
 
 .info-text {
-  color: white;
-  font-size: 1.1rem;
+  color: #666;
+  font-size: 1rem;
   line-height: 1.6;
   margin: 0;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-  font-family: 'Georgia', 'Times New Roman', 'Times', serif;
 }
 
 .info-text strong {
   font-weight: 700;
-  font-size: 1.2rem;
+  color: #1a1a1a;
 }
 
 .start-button {
   width: 100%;
-  padding: 1.5rem 3rem;
-  font-size: 1.8rem;
-  font-weight: 900;
-  color: white;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(5, 150, 105, 0.4));
-  backdrop-filter: blur(10px);
-  border: 5px solid rgba(255, 255, 255, 0.6);
-  border-radius: 50px;
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: #58CC02;
+  border: none;
+  border-radius: 16px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow:
-    0 10px 30px rgba(0, 0, 0, 0.3),
-    inset 0 2px 10px rgba(255, 255, 255, 0.3);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(88, 204, 2, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .start-button:hover:not(:disabled) {
-  transform: scale(1.05);
-  border-color: rgba(255, 255, 255, 0.9);
-  box-shadow:
-    0 15px 40px rgba(0, 0, 0, 0.4),
-    inset 0 2px 10px rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(88, 204, 2, 0.4);
+  background: #4db300;
 }
 
 .start-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
 @media (max-width: 600px) {
