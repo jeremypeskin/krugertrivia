@@ -104,9 +104,10 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import animals from '@/data/animals.js'
+import { useGameSettingsStore } from '@/stores/gameSettings'
 
 const router = useRouter()
+const gameSettings = useGameSettingsStore()
 const players = ref([])
 const currentAnimal = ref(null)
 const answered = ref(false)
@@ -125,10 +126,14 @@ function shuffleArray(array) {
   return shuffled
 }
 
-// Get random animal
+// Get random animal from filtered animals
 function getRandomAnimal() {
-  const randomIndex = Math.floor(Math.random() * animals.length)
-  return animals[randomIndex]
+  const filteredAnimals = gameSettings.filteredAnimals
+  if (filteredAnimals.length === 0) {
+    return null
+  }
+  const randomIndex = Math.floor(Math.random() * filteredAnimals.length)
+  return filteredAnimals[randomIndex]
 }
 
 // Current player
@@ -141,13 +146,34 @@ const sortedPlayers = computed(() => {
   return [...players.value].sort((a, b) => b.score - a.score)
 })
 
-// Create shuffled options (correct answer + wrong suggestions)
+// Create shuffled options (correct answer + wrong suggestions from filtered animals)
 const shuffledOptions = computed(() => {
   if (!currentAnimal.value) return []
 
+  // Get suggestions from filtered animals only
+  const filteredAnimals = gameSettings.filteredAnimals
+  const availableSuggestions = filteredAnimals
+    .filter(animal => animal.name !== currentAnimal.value.name)
+    .map(animal => animal.name)
+
+  // Use original suggestions if available in filtered animals, otherwise use any filtered animal names
+  const validSuggestions = currentAnimal.value.suggestions.filter(suggestion =>
+    filteredAnimals.some(animal => animal.name === suggestion)
+  )
+
+  // Fill remaining slots with random filtered animal names if needed
+  const suggestions = [...validSuggestions]
+  while (suggestions.length < currentAnimal.value.suggestions.length && availableSuggestions.length > 0) {
+    const randomSuggestion = availableSuggestions[Math.floor(Math.random() * availableSuggestions.length)]
+    if (!suggestions.includes(randomSuggestion)) {
+      suggestions.push(randomSuggestion)
+    }
+    if (suggestions.length >= currentAnimal.value.suggestions.length) break
+  }
+
   const options = [
     currentAnimal.value.name,
-    ...currentAnimal.value.suggestions
+    ...suggestions.slice(0, currentAnimal.value.suggestions.length)
   ]
   return shuffleArray(options)
 })
@@ -211,6 +237,14 @@ onMounted(() => {
       ...player,
       turns: 0
     }))
+
+    // Check if there are any filtered animals available
+    if (gameSettings.filteredAnimals.length === 0) {
+      // No animals available with current filter, redirect to settings
+      router.push('/')
+      return
+    }
+
     currentAnimal.value = getRandomAnimal()
   } else {
     // No players found, redirect to settings

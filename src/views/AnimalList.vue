@@ -1,6 +1,11 @@
 <template>
   <div class="animal-list-container">
-    <h1>Animal Encyclopedia</h1>
+    <div class="header-section">
+      <h1>Animal Encyclopedia</h1>
+      <router-link to="/" class="start-game-button">
+        Start Game
+      </router-link>
+    </div>
     <div class="animals-grid">
       <router-link
         v-for="animal in animals"
@@ -39,13 +44,44 @@ onMounted(() => {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
+.header-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
 h1 {
   color: #1a1a1a;
   font-size: 2.5rem;
-  margin: 0 0 2rem 0;
+  margin: 0;
   text-align: center;
   font-weight: 700;
   letter-spacing: -0.5px;
+}
+
+.start-game-button {
+  padding: 1rem 2.5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: #58CC02;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(88, 204, 2, 0.3);
+  text-decoration: none;
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.start-game-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(88, 204, 2, 0.4);
+  background: #4db300;
 }
 
 .animals-grid {
@@ -124,9 +160,17 @@ h1 {
 }
 
 @media (max-width: 768px) {
+  .header-section {
+    margin-bottom: 1.5rem;
+  }
+
   h1 {
     font-size: 2rem;
-    margin-bottom: 1.5rem;
+  }
+
+  .start-game-button {
+    font-size: 1rem;
+    padding: 0.875rem 2rem;
   }
 
   .animals-grid {
