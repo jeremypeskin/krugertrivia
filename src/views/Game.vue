@@ -106,11 +106,11 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useGameSettingsStore } from '@/stores/gameSettings'
+import animalsData from '@/data/animals.js'
 
 const router = useRouter()
-const gameSettings = useGameSettingsStore()
 const players = ref([])
+const playerCategories = ref({})
 const currentAnimal = ref(null)
 const answered = ref(false)
 const isCorrect = ref(false)
@@ -128,9 +128,24 @@ function shuffleArray(array) {
   return shuffled
 }
 
-// Get random animal from filtered animals
+// Get filtered animals for current player
+const currentPlayerFilteredAnimals = computed(() => {
+  const currentPlayerName = currentPlayer.value.name
+  if (!currentPlayerName || !playerCategories.value[currentPlayerName]) {
+    return animalsData
+  }
+
+  const selectedCategories = playerCategories.value[currentPlayerName]
+  if (selectedCategories.length === 0) {
+    return animalsData
+  }
+
+  return animalsData.filter(animal => selectedCategories.includes(animal.category))
+})
+
+// Get random animal from filtered animals for current player
 function getRandomAnimal() {
-  const filteredAnimals = gameSettings.filteredAnimals
+  const filteredAnimals = currentPlayerFilteredAnimals.value
   if (filteredAnimals.length === 0) {
     return null
   }
@@ -162,8 +177,8 @@ const currentAnimalImage = computed(() => {
 const shuffledOptions = computed(() => {
   if (!currentAnimal.value) return []
 
-  // Get suggestions from filtered animals only
-  const filteredAnimals = gameSettings.filteredAnimals
+  // Get suggestions from filtered animals only (for current player)
+  const filteredAnimals = currentPlayerFilteredAnimals.value
   const availableSuggestions = filteredAnimals
     .filter(animal => animal.name !== currentAnimal.value.name)
     .map(animal => animal.name)
@@ -250,11 +265,40 @@ onMounted(() => {
       turns: 0
     }))
 
-    // Check if there are any filtered animals available
-    if (gameSettings.filteredAnimals.length === 0) {
-      // No animals available with current filter, redirect to settings
-      router.push('/')
-      return
+    // Load player categories from sessionStorage
+    const storedCategories = sessionStorage.getItem('triviaPlayerCategories')
+    if (storedCategories) {
+      try {
+        playerCategories.value = JSON.parse(storedCategories)
+      } catch (e) {
+        console.error('Error loading player categories:', e)
+        // Fallback: use all categories for all players
+        parsedPlayers.forEach(player => {
+          const allCategories = [...new Set(animalsData.map(animal => animal.category))]
+          playerCategories.value[player.name] = allCategories
+        })
+      }
+    } else {
+      // Fallback: use all categories for all players
+      const allCategories = [...new Set(animalsData.map(animal => animal.category))]
+      parsedPlayers.forEach(player => {
+        playerCategories.value[player.name] = allCategories
+      })
+    }
+
+    // Check if current player has any filtered animals available
+    const currentPlayerName = players.value[0]?.name
+    if (currentPlayerName) {
+      const filteredAnimals = animalsData.filter(animal => {
+        const categories = playerCategories.value[currentPlayerName] || []
+        return categories.length === 0 || categories.includes(animal.category)
+      })
+
+      if (filteredAnimals.length === 0) {
+        // No animals available with current filter, redirect to settings
+        router.push('/')
+        return
+      }
     }
 
     currentAnimal.value = getRandomAnimal()

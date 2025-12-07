@@ -3,23 +3,19 @@
   </script>
 
   <template>
+    <div class="navbar-with-logo">
+      <router-link to="/">
+        <img height="80" src="@/assets/krugerkidslogo.png" alt="Logo" class="logo" />
+      </router-link>
+    </div>
     <RouterView />
   </template>
 
-  <style>
-  * {
-    box-sizing: border-box;
-  }
-
-  body {
-    margin: 0;
-    padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  #app {
-    min-height: 100vh;
+  <style scoped>
+  .navbar-with-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
   }
   </style>
