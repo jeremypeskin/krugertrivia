@@ -1,7 +1,5 @@
 <template>
   <div class="settings-container">
-    <h1>Kruger Kids Game Setup</h1>
-
     <div class="settings-content">
       <div class="players-section">
         <h2>Add Players</h2>
@@ -15,12 +13,19 @@
             class="player-input"
             maxlength="20"
           />
-          <button @click="addPlayer" class="add-button" :disabled="!newPlayerName.trim()">
+          <button
+            @click="addPlayer"
+            class="add-button"
+            :disabled="!newPlayerName.trim()"
+          >
             Add Player
           </button>
         </div>
 
-        <div v-if="players.length > 0" class="players-list">
+        <div
+          v-if="players.length > 0"
+          class="players-list"
+        >
           <div
             v-for="(player, index) in players"
             :key="index"
@@ -28,7 +33,12 @@
           >
             <div class="player-item-header">
               <span class="player-name">{{ player.name }}</span>
-              <button @click="removePlayer(index)" class="remove-button">×</button>
+              <button
+                @click="removePlayer(index)"
+                class="remove-button"
+              >
+                ×
+              </button>
             </div>
             <div class="player-categories">
               <div class="category-checkbox">
@@ -42,7 +52,10 @@
                   <span class="checkbox-text">All Categories</span>
                 </label>
               </div>
-              <div v-if="!isAllCategoriesSelectedForPlayer(player.name)" class="categories-list">
+              <div
+                v-if="!isAllCategoriesSelectedForPlayer(player.name)"
+                class="categories-list"
+              >
                 <label
                   v-for="category in allCategories"
                   :key="category"
@@ -50,7 +63,9 @@
                 >
                   <input
                     type="checkbox"
-                    :checked="isCategorySelectedForPlayer(player.name, category)"
+                    :checked="
+                      isCategorySelectedForPlayer(player.name, category)
+                    "
                     @change="toggleCategoryForPlayer(player.name, category)"
                     class="checkbox-input"
                   />
@@ -61,21 +76,26 @@
           </div>
         </div>
 
-        <div v-if="players.length === 0" class="empty-state">
+        <div
+          v-if="players.length === 0"
+          class="empty-state"
+        >
           <p>No players added yet. Add at least one player to start!</p>
         </div>
       </div>
 
-
       <div class="game-info">
         <p class="info-text">
-          Each player will get <strong>5 turns</strong> to guess animals correctly.
-          Points are awarded for correct answers!
+          Each player will get <strong>5 turns</strong> to guess animals
+          correctly. Points are awarded for correct answers!
         </p>
       </div>
 
       <div class="buttons-container">
-        <router-link to="/animals" class="encyclopedia-link">
+        <router-link
+          to="/animals"
+          class="encyclopedia-link"
+        >
           Animal Encyclopedia
         </router-link>
 
@@ -92,185 +112,204 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { useGameSettingsStore } from '@/stores/gameSettings'
-import animalsData from '@/data/animals.js'
+import { ref, onMounted, watch, computed } from "vue";
+import { useRouter } from "vue-router";
+import { useGameSettingsStore } from "@/stores/gameSettings";
+import animalsData from "@/data/animals.js";
 
-const router = useRouter()
-const gameSettings = useGameSettingsStore()
-const players = ref([])
-const newPlayerName = ref('')
-const playerCategories = ref({}) // Store player categories reactively
+const router = useRouter();
+const gameSettings = useGameSettingsStore();
+const players = ref([]);
+const newPlayerName = ref("");
+const playerCategories = ref({}); // Store player categories reactively
 
-const STORAGE_KEY = 'krugerTriviaPlayers'
-const CATEGORIES_STORAGE_PREFIX = 'krugerTriviaPlayerCategories_'
+const STORAGE_KEY = "krugerTriviaPlayers";
+const CATEGORIES_STORAGE_PREFIX = "krugerTriviaPlayerCategories_";
 
 // Get all unique categories
-const allCategories = [...new Set(animalsData.map(animal => animal.category))]
+const allCategories = [
+  ...new Set(animalsData.map((animal) => animal.category)),
+];
 
 // Get player categories from localStorage
 function getPlayerCategoriesKey(playerName) {
-  return `${CATEGORIES_STORAGE_PREFIX}${playerName}`
+  return `${CATEGORIES_STORAGE_PREFIX}${playerName}`;
 }
 
 // Load player categories from localStorage
 function loadPlayerCategories(playerName) {
-  const key = getPlayerCategoriesKey(playerName)
-  const stored = localStorage.getItem(key)
+  const key = getPlayerCategoriesKey(playerName);
+  const stored = localStorage.getItem(key);
   if (stored) {
     try {
-      return JSON.parse(stored)
+      return JSON.parse(stored);
     } catch (e) {
-      console.error(`Error loading categories for ${playerName}:`, e)
+      console.error(`Error loading categories for ${playerName}:`, e);
     }
   }
   // Default: all categories selected
   return {
     allSelected: true,
-    selected: [...allCategories]
-  }
+    selected: [...allCategories],
+  };
 }
 
 // Save player categories to localStorage
 function savePlayerCategories(playerName, categories) {
-  const key = getPlayerCategoriesKey(playerName)
-  localStorage.setItem(key, JSON.stringify(categories))
+  const key = getPlayerCategoriesKey(playerName);
+  localStorage.setItem(key, JSON.stringify(categories));
   // Update reactive ref
-  playerCategories.value[playerName] = categories
+  playerCategories.value[playerName] = categories;
 }
 
 // Initialize player categories in reactive ref
 function initializePlayerCategories(playerName) {
   if (!playerCategories.value[playerName]) {
-    playerCategories.value[playerName] = loadPlayerCategories(playerName)
+    playerCategories.value[playerName] = loadPlayerCategories(playerName);
   }
 }
 
 // Check if all categories are selected for a player
 function isAllCategoriesSelectedForPlayer(playerName) {
-  initializePlayerCategories(playerName)
-  const categories = playerCategories.value[playerName]
+  initializePlayerCategories(playerName);
+  const categories = playerCategories.value[playerName];
   // Only return true if explicitly allSelected is true, not just if length matches
-  return categories.allSelected === true
+  return categories.allSelected === true;
 }
 
 // Check if a specific category is selected for a player
 function isCategorySelectedForPlayer(playerName, category) {
-  initializePlayerCategories(playerName)
-  const categories = playerCategories.value[playerName]
-  if (categories.allSelected || categories.selected.length === allCategories.length) {
-    return true
+  initializePlayerCategories(playerName);
+  const categories = playerCategories.value[playerName];
+  if (
+    categories.allSelected ||
+    categories.selected.length === allCategories.length
+  ) {
+    return true;
   }
-  return categories.selected.includes(category)
+  return categories.selected.includes(category);
 }
 
 // Toggle all categories for a player
 function toggleAllCategoriesForPlayer(playerName) {
-  initializePlayerCategories(playerName)
-  const categories = playerCategories.value[playerName]
-  const newAllSelected = !categories.allSelected
+  initializePlayerCategories(playerName);
+  const categories = playerCategories.value[playerName];
+  const newAllSelected = !categories.allSelected;
 
   const newCategories = {
     allSelected: newAllSelected,
-    selected: newAllSelected ? [...allCategories] : (categories.selected.length === allCategories.length ? [] : categories.selected)
-  }
+    selected: newAllSelected
+      ? [...allCategories]
+      : categories.selected.length === allCategories.length
+      ? []
+      : categories.selected,
+  };
 
-  savePlayerCategories(playerName, newCategories)
+  savePlayerCategories(playerName, newCategories);
 }
 
 // Toggle a specific category for a player
 function toggleCategoryForPlayer(playerName, category) {
-  initializePlayerCategories(playerName)
-  const categories = playerCategories.value[playerName]
-  const selected = [...categories.selected]
-  const index = selected.indexOf(category)
+  initializePlayerCategories(playerName);
+  const categories = playerCategories.value[playerName];
+  const selected = [...categories.selected];
+  const index = selected.indexOf(category);
 
   if (index > -1) {
-    selected.splice(index, 1)
+    selected.splice(index, 1);
   } else {
-    selected.push(category)
+    selected.push(category);
   }
 
   const newCategories = {
     allSelected: selected.length === allCategories.length,
-    selected: selected
-  }
+    selected: selected,
+  };
 
-  savePlayerCategories(playerName, newCategories)
+  savePlayerCategories(playerName, newCategories);
 }
 
 // Get selected categories for a player
 function getPlayerSelectedCategories(playerName) {
-  initializePlayerCategories(playerName)
-  const categories = playerCategories.value[playerName]
-  if (categories.allSelected || categories.selected.length === allCategories.length) {
-    return allCategories
+  initializePlayerCategories(playerName);
+  const categories = playerCategories.value[playerName];
+  if (
+    categories.allSelected ||
+    categories.selected.length === allCategories.length
+  ) {
+    return allCategories;
   }
-  return categories.selected
+  return categories.selected;
 }
 
 // Check if all players have at least one category selected
 function allPlayersHaveCategories() {
-  return players.value.every(player => {
-    const categories = getPlayerSelectedCategories(player.name)
-    return categories.length > 0
-  })
+  return players.value.every((player) => {
+    const categories = getPlayerSelectedCategories(player.name);
+    return categories.length > 0;
+  });
 }
 
 // Load players from localStorage
 function loadPlayers() {
-  const storedPlayers = localStorage.getItem(STORAGE_KEY)
+  const storedPlayers = localStorage.getItem(STORAGE_KEY);
   if (storedPlayers) {
     try {
-      players.value = JSON.parse(storedPlayers)
+      players.value = JSON.parse(storedPlayers);
       // Initialize categories for all loaded players
-      players.value.forEach(player => {
-        initializePlayerCategories(player.name)
-      })
+      players.value.forEach((player) => {
+        initializePlayerCategories(player.name);
+      });
     } catch (e) {
-      console.error('Error loading players from localStorage:', e)
-      players.value = []
+      console.error("Error loading players from localStorage:", e);
+      players.value = [];
     }
   }
 }
 
 // Save players to localStorage
 function savePlayers() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(players.value))
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(players.value));
 }
 
 // Initialize and load players on mount
 onMounted(() => {
-  loadPlayers()
-})
+  loadPlayers();
+});
 
 // Watch for changes to players and save to localStorage
-watch(players, () => {
-  savePlayers()
-}, { deep: true })
+watch(
+  players,
+  () => {
+    savePlayers();
+  },
+  { deep: true }
+);
 
 function addPlayer() {
-  const name = newPlayerName.value.trim()
-  if (name && !players.value.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+  const name = newPlayerName.value.trim();
+  if (
+    name &&
+    !players.value.some((p) => p.name.toLowerCase() === name.toLowerCase())
+  ) {
     players.value.push({
       name: name,
-      score: 0
-    })
+      score: 0,
+    });
     // Initialize default categories (all selected) for new player
     const defaultCategories = {
       allSelected: true,
-      selected: [...allCategories]
-    }
-    playerCategories.value[name] = defaultCategories
-    savePlayerCategories(name, defaultCategories)
-    newPlayerName.value = ''
+      selected: [...allCategories],
+    };
+    playerCategories.value[name] = defaultCategories;
+    savePlayerCategories(name, defaultCategories);
+    newPlayerName.value = "";
   }
 }
 
 function removePlayer(index) {
-  const playerName = players.value[index].name
-  players.value.splice(index, 1)
+  const playerName = players.value[index].name;
+  players.value.splice(index, 1);
   // Optionally remove categories from localStorage when player is removed
   // localStorage.removeItem(getPlayerCategoriesKey(playerName))
 }
@@ -278,18 +317,21 @@ function removePlayer(index) {
 function startGame() {
   if (players.value.length > 0 && allPlayersHaveCategories()) {
     // Store players in sessionStorage
-    sessionStorage.setItem('triviaPlayers', JSON.stringify(players.value))
+    sessionStorage.setItem("triviaPlayers", JSON.stringify(players.value));
 
     // Store each player's categories in sessionStorage
-    const playerCategories = {}
-    players.value.forEach(player => {
-      playerCategories[player.name] = getPlayerSelectedCategories(player.name)
-    })
-    sessionStorage.setItem('triviaPlayerCategories', JSON.stringify(playerCategories))
+    const playerCategories = {};
+    players.value.forEach((player) => {
+      playerCategories[player.name] = getPlayerSelectedCategories(player.name);
+    });
+    sessionStorage.setItem(
+      "triviaPlayerCategories",
+      JSON.stringify(playerCategories)
+    );
 
-    router.push('/game')
+    router.push("/game");
   } else if (!allPlayersHaveCategories()) {
-    alert('Please ensure all players have at least one category selected.')
+    alert("Please ensure all players have at least one category selected.");
   }
 }
 </script>
@@ -297,13 +339,21 @@ function startGame() {
 <style scoped>
 .settings-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 25%, #f0f9ff 50%, #ecfdf5 75%, #d1fae5 100%);
-  padding: 2rem 1.5rem;
+  background: linear-gradient(
+    135deg,
+    #dbeafe 0%,
+    #e0f2fe 25%,
+    #f0f9ff 50%,
+    #ecfdf5 75%,
+    #d1fae5 100%
+  );
+  padding: 4rem 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  justify-content: normal;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
 }
 
 h1 {
@@ -362,7 +412,7 @@ h1 {
 }
 
 .player-input:focus {
-  border-color: #58CC02;
+  border-color: #58cc02;
   box-shadow: 0 0 0 3px rgba(88, 204, 2, 0.1);
 }
 
@@ -371,7 +421,7 @@ h1 {
   font-size: 1rem;
   font-weight: 600;
   color: #ffffff;
-  background: #1CB0F6;
+  background: #1cb0f6;
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -504,7 +554,7 @@ h1 {
   width: 20px;
   height: 20px;
   cursor: pointer;
-  accent-color: #58CC02;
+  accent-color: #58cc02;
   flex-shrink: 0;
 }
 
@@ -541,8 +591,8 @@ h1 {
 
 .encyclopedia-link:hover {
   transform: translateY(-2px);
-  border-color: #1CB0F6;
-  color: #1CB0F6;
+  border-color: #1cb0f6;
+  color: #1cb0f6;
   box-shadow: 0 4px 12px rgba(28, 176, 246, 0.15);
 }
 
@@ -552,7 +602,7 @@ h1 {
   font-size: 1.125rem;
   font-weight: 700;
   color: #ffffff;
-  background: #58CC02;
+  background: #58cc02;
   border: none;
   border-radius: 16px;
   cursor: pointer;
@@ -598,4 +648,3 @@ h1 {
   }
 }
 </style>
-

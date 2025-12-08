@@ -1,7 +1,10 @@
 <template>
   <div class="game-container">
     <!-- End Game Screen -->
-    <div v-if="gameEnded" class="end-game-screen">
+    <div
+      v-if="gameEnded"
+      class="end-game-screen"
+    >
       <h1>Game Over!</h1>
       <div class="final-scores">
         <h2>Final Scores</h2>
@@ -10,7 +13,12 @@
             v-for="(player, index) in sortedPlayers"
             :key="index"
             class="score-item"
-            :class="{ winner: index === 0 && sortedPlayers.length > 1 && player.score === sortedPlayers[0].score }"
+            :class="{
+              winner:
+                index === 0 &&
+                sortedPlayers.length > 1 &&
+                player.score === sortedPlayers[0].score,
+            }"
           >
             <span class="rank">{{ index + 1 }}</span>
             <span class="player-name">{{ player.name }}</span>
@@ -18,13 +26,19 @@
           </div>
         </div>
       </div>
-      <button @click="replay" class="replay-button">
+      <button
+        @click="replay"
+        class="replay-button"
+      >
         Play Again
       </button>
     </div>
 
     <!-- Active Game Screen -->
-    <div v-else-if="players.length > 0 && currentAnimal" class="game-content-wrapper">
+    <div
+      v-else-if="players.length > 0 && currentAnimal"
+      class="game-content-wrapper"
+    >
       <h1>What am I?</h1>
 
       <div class="game-grid">
@@ -67,7 +81,10 @@
           </div>
 
           <!-- Answer Options (Chips) -->
-          <div v-if="!answered" class="options-container">
+          <div
+            v-if="!answered"
+            class="options-container"
+          >
             <button
               v-for="(option, index) in shuffledOptions"
               :key="index"
@@ -82,20 +99,48 @@
     </div>
 
     <!-- Feedback Modal Popup -->
-    <div v-if="answered" class="modal-overlay" @click.self="nextAnimal">
+    <div
+      v-if="answered"
+      class="modal-overlay"
+      @click.self="nextAnimal"
+    >
       <div class="modal-content">
-        <div v-if="isCorrect" class="feedback-message correct">
+        <div
+          v-if="isCorrect"
+          class="feedback-message correct"
+        >
           <h2>Correct!</h2>
-          <p>Great job, {{ currentPlayer.name }}! That's a {{ currentAnimal.name }}!</p>
-          <p v-if="currentAnimal.description" class="animal-description">{{ currentAnimal.description }}</p>
+          <p>
+            Great job, {{ currentPlayer.name }}! That's a
+            {{ currentAnimal.name }}!
+          </p>
+          <p
+            v-if="currentAnimal.description"
+            class="animal-description"
+          >
+            {{ currentAnimal.description }}
+          </p>
           <p class="points-earned">+1 point!</p>
         </div>
-        <div v-else class="feedback-message incorrect">
+        <div
+          v-else
+          class="feedback-message incorrect"
+        >
           <h2>Incorrect</h2>
-          <p>The correct answer is: <strong>{{ currentAnimal.name }}</strong></p>
-          <p v-if="currentAnimal.description" class="animal-description">{{ currentAnimal.description }}</p>
+          <p>
+            The correct answer is: <strong>{{ currentAnimal.name }}</strong>
+          </p>
+          <p
+            v-if="currentAnimal.description"
+            class="animal-description"
+          >
+            {{ currentAnimal.description }}
+          </p>
         </div>
-        <button @click="nextAnimal" class="next-button">
+        <button
+          @click="nextAnimal"
+          class="next-button"
+        >
           Next Animal →
         </button>
       </div>
@@ -104,221 +149,248 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import animalsData from '@/data/animals.js'
+import { ref, onMounted, computed } from "vue";
+import { useRouter } from "vue-router";
+import animalsData from "@/data/animals.js";
 
-const router = useRouter()
-const players = ref([])
-const playerCategories = ref({})
-const currentAnimal = ref(null)
-const answered = ref(false)
-const isCorrect = ref(false)
-const selectedAnswer = ref(null)
-const currentPlayerIndex = ref(0)
-const gameEnded = ref(false)
+const router = useRouter();
+const players = ref([]);
+const playerCategories = ref({});
+const currentAnimal = ref(null);
+const answered = ref(false);
+const isCorrect = ref(false);
+const selectedAnswer = ref(null);
+const currentPlayerIndex = ref(0);
+const gameEnded = ref(false);
 
 // Shuffle array function
 function shuffleArray(array) {
-  const shuffled = [...array]
+  const shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
-  return shuffled
+  return shuffled;
 }
 
 // Get filtered animals for current player
 const currentPlayerFilteredAnimals = computed(() => {
-  const currentPlayerName = currentPlayer.value.name
+  const currentPlayerName = currentPlayer.value.name;
   if (!currentPlayerName || !playerCategories.value[currentPlayerName]) {
-    return animalsData
+    return animalsData;
   }
 
-  const selectedCategories = playerCategories.value[currentPlayerName]
+  const selectedCategories = playerCategories.value[currentPlayerName];
   if (selectedCategories.length === 0) {
-    return animalsData
+    return animalsData;
   }
 
-  return animalsData.filter(animal => selectedCategories.includes(animal.category))
-})
+  return animalsData.filter((animal) =>
+    selectedCategories.includes(animal.category)
+  );
+});
 
 // Get random animal from filtered animals for current player
 function getRandomAnimal() {
-  const filteredAnimals = currentPlayerFilteredAnimals.value
+  const filteredAnimals = currentPlayerFilteredAnimals.value;
   if (filteredAnimals.length === 0) {
-    return null
+    return null;
   }
-  const randomIndex = Math.floor(Math.random() * filteredAnimals.length)
-  return filteredAnimals[randomIndex]
+  const randomIndex = Math.floor(Math.random() * filteredAnimals.length);
+  return filteredAnimals[randomIndex];
 }
 
 // Current player
 const currentPlayer = computed(() => {
-  return players.value[currentPlayerIndex.value] || { name: '', score: 0, turns: 0 }
-})
+  return (
+    players.value[currentPlayerIndex.value] || { name: "", score: 0, turns: 0 }
+  );
+});
 
 // Sorted players by score (descending)
 const sortedPlayers = computed(() => {
-  return [...players.value].sort((a, b) => b.score - a.score)
-})
+  return [...players.value].sort((a, b) => b.score - a.score);
+});
 
 // Get random image from current animal's images
 const currentAnimalImage = computed(() => {
-  if (!currentAnimal.value || !currentAnimal.value.images || currentAnimal.value.images.length === 0) {
-    return ''
+  if (
+    !currentAnimal.value ||
+    !currentAnimal.value.images ||
+    currentAnimal.value.images.length === 0
+  ) {
+    return "";
   }
-  const images = currentAnimal.value.images
-  const randomIndex = Math.floor(Math.random() * images.length)
-  return images[randomIndex]
-})
+  const images = currentAnimal.value.images;
+  const randomIndex = Math.floor(Math.random() * images.length);
+  return images[randomIndex];
+});
 
 // Create shuffled options (correct answer + wrong suggestions from filtered animals)
 const shuffledOptions = computed(() => {
-  if (!currentAnimal.value) return []
+  if (!currentAnimal.value) return [];
 
   // Get suggestions from filtered animals only (for current player)
-  const filteredAnimals = currentPlayerFilteredAnimals.value
+  const filteredAnimals = currentPlayerFilteredAnimals.value;
   const availableSuggestions = filteredAnimals
-    .filter(animal => animal.name !== currentAnimal.value.name)
-    .map(animal => animal.name)
+    .filter((animal) => animal.name !== currentAnimal.value.name)
+    .map((animal) => animal.name);
 
   // Use original suggestions if available in filtered animals, otherwise use any filtered animal names
-  const validSuggestions = currentAnimal.value.suggestions.filter(suggestion =>
-    filteredAnimals.some(animal => animal.name === suggestion)
-  )
+  const validSuggestions = currentAnimal.value.suggestions.filter(
+    (suggestion) => filteredAnimals.some((animal) => animal.name === suggestion)
+  );
 
   // Fill remaining slots with random filtered animal names if needed
-  const suggestions = [...validSuggestions]
-  while (suggestions.length < currentAnimal.value.suggestions.length && availableSuggestions.length > 0) {
-    const randomSuggestion = availableSuggestions[Math.floor(Math.random() * availableSuggestions.length)]
+  const suggestions = [...validSuggestions];
+  while (
+    suggestions.length < currentAnimal.value.suggestions.length &&
+    availableSuggestions.length > 0
+  ) {
+    const randomSuggestion =
+      availableSuggestions[
+        Math.floor(Math.random() * availableSuggestions.length)
+      ];
     if (!suggestions.includes(randomSuggestion)) {
-      suggestions.push(randomSuggestion)
+      suggestions.push(randomSuggestion);
     }
-    if (suggestions.length >= currentAnimal.value.suggestions.length) break
+    if (suggestions.length >= currentAnimal.value.suggestions.length) break;
   }
 
   const options = [
     currentAnimal.value.name,
-    ...suggestions.slice(0, currentAnimal.value.suggestions.length)
-  ]
-  return shuffleArray(options)
-})
+    ...suggestions.slice(0, currentAnimal.value.suggestions.length),
+  ];
+  return shuffleArray(options);
+});
 
 // Check if game should end
 function checkGameEnd() {
-  const allPlayersFinished = players.value.every(player => player.turns >= 5)
+  const allPlayersFinished = players.value.every((player) => player.turns >= 5);
   if (allPlayersFinished) {
-    gameEnded.value = true
+    gameEnded.value = true;
   }
 }
 
 // Select an answer
 function selectAnswer(answer) {
-  if (answered.value) return
+  if (answered.value) return;
 
-  answered.value = true
-  selectedAnswer.value = answer
-  isCorrect.value = answer === currentAnimal.value.name
+  answered.value = true;
+  selectedAnswer.value = answer;
+  isCorrect.value = answer === currentAnimal.value.name;
 
   // Update score if correct
   if (isCorrect.value) {
-    players.value[currentPlayerIndex.value].score += 1
+    players.value[currentPlayerIndex.value].score += 1;
   }
 }
 
 // Move to next animal and next player
 function nextAnimal() {
-  answered.value = false
-  isCorrect.value = false
-  selectedAnswer.value = null
+  answered.value = false;
+  isCorrect.value = false;
+  selectedAnswer.value = null;
 
   // Increment current player's turn count
-  players.value[currentPlayerIndex.value].turns += 1
+  players.value[currentPlayerIndex.value].turns += 1;
 
   // Check if game ended
-  checkGameEnd()
+  checkGameEnd();
 
   if (!gameEnded.value) {
     // Move to next player (round-robin)
-    currentPlayerIndex.value = (currentPlayerIndex.value + 1) % players.value.length
+    currentPlayerIndex.value =
+      (currentPlayerIndex.value + 1) % players.value.length;
 
     // Get new animal
-    currentAnimal.value = getRandomAnimal()
+    currentAnimal.value = getRandomAnimal();
   }
 }
 
 // Replay game
 function replay() {
-  router.push('/')
+  router.push("/");
 }
 
 // Initialize game
 onMounted(() => {
   // Load players from sessionStorage
-  const storedPlayers = sessionStorage.getItem('triviaPlayers')
+  const storedPlayers = sessionStorage.getItem("triviaPlayers");
   if (storedPlayers) {
-    const parsedPlayers = JSON.parse(storedPlayers)
+    const parsedPlayers = JSON.parse(storedPlayers);
     // Initialize players with turns counter
-    players.value = parsedPlayers.map(player => ({
+    players.value = parsedPlayers.map((player) => ({
       ...player,
-      turns: 0
-    }))
+      turns: 0,
+    }));
 
     // Load player categories from sessionStorage
-    const storedCategories = sessionStorage.getItem('triviaPlayerCategories')
+    const storedCategories = sessionStorage.getItem("triviaPlayerCategories");
     if (storedCategories) {
       try {
-        playerCategories.value = JSON.parse(storedCategories)
+        playerCategories.value = JSON.parse(storedCategories);
       } catch (e) {
-        console.error('Error loading player categories:', e)
+        console.error("Error loading player categories:", e);
         // Fallback: use all categories for all players
-        parsedPlayers.forEach(player => {
-          const allCategories = [...new Set(animalsData.map(animal => animal.category))]
-          playerCategories.value[player.name] = allCategories
-        })
+        parsedPlayers.forEach((player) => {
+          const allCategories = [
+            ...new Set(animalsData.map((animal) => animal.category)),
+          ];
+          playerCategories.value[player.name] = allCategories;
+        });
       }
     } else {
       // Fallback: use all categories for all players
-      const allCategories = [...new Set(animalsData.map(animal => animal.category))]
-      parsedPlayers.forEach(player => {
-        playerCategories.value[player.name] = allCategories
-      })
+      const allCategories = [
+        ...new Set(animalsData.map((animal) => animal.category)),
+      ];
+      parsedPlayers.forEach((player) => {
+        playerCategories.value[player.name] = allCategories;
+      });
     }
 
     // Check if current player has any filtered animals available
-    const currentPlayerName = players.value[0]?.name
+    const currentPlayerName = players.value[0]?.name;
     if (currentPlayerName) {
-      const filteredAnimals = animalsData.filter(animal => {
-        const categories = playerCategories.value[currentPlayerName] || []
-        return categories.length === 0 || categories.includes(animal.category)
-      })
+      const filteredAnimals = animalsData.filter((animal) => {
+        const categories = playerCategories.value[currentPlayerName] || [];
+        return categories.length === 0 || categories.includes(animal.category);
+      });
 
       if (filteredAnimals.length === 0) {
         // No animals available with current filter, redirect to settings
-        router.push('/')
-        return
+        router.push("/");
+        return;
       }
     }
 
-    currentAnimal.value = getRandomAnimal()
+    currentAnimal.value = getRandomAnimal();
   } else {
     // No players found, redirect to settings
-    router.push('/')
+    router.push("/");
   }
-})
+});
 </script>
 
 <style scoped>
 .game-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 25%, #f0f9ff 50%, #ecfdf5 75%, #d1fae5 100%);
+  background: linear-gradient(
+    135deg,
+    #dbeafe 0%,
+    #e0f2fe 25%,
+    #f0f9ff 50%,
+    #ecfdf5 75%,
+    #d1fae5 100%
+  );
   padding: 2rem 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  justify-content: normal;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
 }
 
 h1 {
@@ -401,7 +473,7 @@ h1 {
 }
 
 .scoreboard-item.active {
-  border-color: #58CC02;
+  border-color: #58cc02;
   background: #f0fdf4;
   box-shadow: 0 0 0 3px rgba(88, 204, 2, 0.1);
   transform: translateX(4px);
@@ -421,7 +493,7 @@ h1 {
 }
 
 .scoreboard-item .score {
-  color: #58CC02;
+  color: #58cc02;
   font-size: 1.5rem;
   font-weight: 700;
 }
@@ -484,7 +556,7 @@ h1 {
 
 .option-chip:hover {
   transform: translateY(-2px);
-  border-color: #58CC02;
+  border-color: #58cc02;
   box-shadow: 0 4px 12px rgba(88, 204, 2, 0.2);
 }
 
@@ -493,38 +565,38 @@ h1 {
 }
 
 .option-chip:nth-child(1) {
-  border-color: #FF6B6B;
+  border-color: #ff6b6b;
 }
 
 .option-chip:nth-child(1):hover {
-  border-color: #FF6B6B;
+  border-color: #ff6b6b;
   box-shadow: 0 4px 12px rgba(255, 107, 107, 0.2);
 }
 
 .option-chip:nth-child(2) {
-  border-color: #1CB0F6;
+  border-color: #1cb0f6;
 }
 
 .option-chip:nth-child(2):hover {
-  border-color: #1CB0F6;
+  border-color: #1cb0f6;
   box-shadow: 0 4px 12px rgba(28, 176, 246, 0.2);
 }
 
 .option-chip:nth-child(3) {
-  border-color: #FFCE00;
+  border-color: #ffce00;
 }
 
 .option-chip:nth-child(3):hover {
-  border-color: #FFCE00;
+  border-color: #ffce00;
   box-shadow: 0 4px 12px rgba(255, 206, 0, 0.2);
 }
 
 .option-chip:nth-child(4) {
-  border-color: #A855F7;
+  border-color: #a855f7;
 }
 
 .option-chip:nth-child(4):hover {
-  border-color: #A855F7;
+  border-color: #a855f7;
   box-shadow: 0 4px 12px rgba(168, 85, 247, 0.2);
 }
 
@@ -585,7 +657,7 @@ h1 {
 .feedback-message.correct {
   background: #f0fdf4;
   color: #166534;
-  border-color: #58CC02;
+  border-color: #58cc02;
 }
 
 .feedback-message.incorrect {
@@ -635,7 +707,7 @@ h1 {
   margin-top: 0.75rem !important;
   font-size: 1.25rem !important;
   font-weight: 700 !important;
-  color: #58CC02 !important;
+  color: #58cc02 !important;
 }
 
 /* End Game Screen */
@@ -684,7 +756,7 @@ h1 {
 
 .score-item.winner {
   background: #fef3c7;
-  border-color: #FFCE00;
+  border-color: #ffce00;
   box-shadow: 0 0 0 3px rgba(255, 206, 0, 0.1);
 }
 
@@ -697,7 +769,7 @@ h1 {
 }
 
 .score-item.winner .rank {
-  color: #FFCE00;
+  color: #ffce00;
 }
 
 .score-item .player-name {
@@ -711,7 +783,7 @@ h1 {
 .score-item .score {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #58CC02;
+  color: #58cc02;
   white-space: nowrap;
   margin-left: auto;
 }
@@ -721,7 +793,7 @@ h1 {
   font-size: 1.125rem;
   font-weight: 700;
   color: #ffffff;
-  background: #58CC02;
+  background: #58cc02;
   border: none;
   border-radius: 16px;
   cursor: pointer;
@@ -742,7 +814,7 @@ h1 {
   font-size: 1.125rem;
   font-weight: 700;
   color: #ffffff;
-  background: #58CC02;
+  background: #58cc02;
   border: none;
   border-radius: 16px;
   cursor: pointer;
